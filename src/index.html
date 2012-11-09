@@ -31,39 +31,14 @@
 
     <div ng-app="ng-remote" server-scope ng-controller="MyCtrl" class="container">
 
-            <h1>Starcounter BETA 2 Demo</h1>
-            <hr />
-
-            <h4>Order {{OrderNo}}</h4>
-
-            <div ui-datagrid datarows="item in Items">
-                <datacolumn value="item.Product._Search" live strict title="'Product'" type="'autocomplete'">
-                    <optionlist datarows="option in item.Product._Options" clickrow="option.Pick = '$$null'">
-                        <img src="{{option.Image}}" style="width: 16px; height: 16px"> {{option.Description}}
-                    </optionlist>
-                </datacolumn>
-                <datacolumn value="item.Quantity" title="'Quantity'"/>
-            </div>
-
-
-<!--
-           <datagrid datarows="item in Items">
-                <datacolumn value="item.Product._Search" title="Product" type="'autocomplete'">
-                    <optionsgrid datarows="option in Options" clickRow="option.Pick=true">
-                        <datacolumn value="option.Description">
-                        <datacolumn value="option.Image">
-                    </optionsgrid>
-                </datacolumn>
-                <datacolumn value="item.Quantity" title="Quantity"/>
-            </datagrid>
--->
-            <h4>Total: {{Total}}</h4>
+        <h1>Starcounter BETA 2 Demo</h1>
+        <hr />
 
         <div class="btn-group">
             <a class="btn btn-primary" href="/new-order">New Order</a>
             <a class="btn" href="/orders">Order List</a>
-        </div>        
-  
+        </div>
+
     </div>
 
 </body>
