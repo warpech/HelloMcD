@@ -34,11 +34,35 @@
         <h1>Starcounter BETA 2 Demo</h1>
         <hr />
 
+        <h4>Order {{OrderNo}}</h4>
+
+        <div ui-datagrid datarows="item in Items">
+            <datacolumn type="'autocomplete'"
+                options="getOptions(item.Product._Options)"
+                lookup="autocompleteLookup"
+                select="autocompleteSelect"
+                value="item.Product._Search"
+                title="Product" />
+            <datacolumn value="item.Quantity" title="Quantity" />
+        </div>
+
+        <!--
+           <datagrid datarows="item in Items">
+                <datacolumn value="item.Product._Search" title="Product" type="'autocomplete'">
+                    <optionsgrid datarows="option in Options" clickRow="option.Pick=true">
+                        <datacolumn value="option.Description">
+                        <datacolumn value="option.Image">
+                    </optionsgrid>
+                </datacolumn>
+                <datacolumn value="item.Quantity" title="Quantity"/>
+            </datagrid>
+-->
+        <h4>Total: {{Total}}</h4>
+
         <div class="btn-group">
-            <a class="btn btn-primary" href="/new-order">New Order</a>
-            <a class="btn" href="/orders">Order List</a>
-        </div>        
-  
+            <button ng-click="Save = !Save" class="btn btn-primary">Save</button>
+            <button ng-click="Cancel = !Cancel" class="btn">Cancel</button>
+        </div>
     </div>
 
 </body>

@@ -70,6 +70,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OrderListApp.json.cs">
+      <DependentUpon>OrderListApp.json</DependentUpon>
+    </Compile>
     <Compile Include="MainApp.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="OrderApp.json.cs">
@@ -83,6 +86,9 @@
     </App>
   </ItemGroup>
   <ItemGroup>
+    <App Include="OrderListApp.json">
+      <Generator>MsBuild:Compile</Generator>
+    </App>
     <None Include="css\angular-ui-0.3.1.min.css" />
     <None Include="index.html" />
     <None Include="js\appContext.js" />
@@ -94,6 +100,7 @@
     <Content Include="css\bootstrap-2.2.1.min.css" />
     <Content Include="css\bootstrap.readme.txt" />
     <Content Include="js\angular-datagrid\angular-datagrid.js" />
+    <Content Include="orders.html" />
     <Content Include="sys\angular-ui-0.3.1.min.js" />
     <Content Include="sys\angular-ui-ieshiv-0.3.1.min.js" />
     <Content Include="sys\angular.1.0.2.min.js" />

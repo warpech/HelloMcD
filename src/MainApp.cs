@@ -8,19 +8,42 @@ using Starcounter.Internal.Web;
 
 namespace HelloMcd {
     partial class MainApp : App {
-        //private static String RESOURCE_DIRECTORY = @"c:\Code\Level1\src\Samples\HelloMcd";    // chr
-        private static String RESOURCE_DIRECTORY = @"c:\GitHub\Level1\src\Samples\HelloMcD";    // andwah
+
+        private static String RESOURCE_DIRECTORY = @"c:\GitHub\HelloMcD\src";
         //private static String RESOURCE_DIRECTORY = @"HelloMcd"; // Marcin
 
         static void Main(String[] args) {
             Bootstrap();
             AssureSampleData();
-           
-            GET("/order", () => {
+
+            GET("/", () => {
                 LongRunningTransaction.NewCurrent();
                 Order order = new Order() { OrderNo = 666 };
                 return new OrderApp() { Data = order, View = "index.html" };
             });
+
+
+            GET("/new-order", () => {
+                LongRunningTransaction.NewCurrent();
+                Order order = new Order() { OrderNo = 666 };
+                return new OrderApp() { Data = order, View = "order.html" };
+            });
+
+
+            GET("/orders", () => {
+                LongRunningTransaction.NewCurrent();
+                var x = new OrderListApp() { View = "orders.html" };
+                x.SetOrders();
+                return x;
+            });
+
+            GET("/orders/@i", (int orderNo) => {
+                LongRunningTransaction.NewCurrent();
+                return new OrderApp() { Data = Db.SQL("SELECT o FROM [Order] o").First, View = "order.html" };
+//                return new OrderApp() { Data = Db.SQL("SELECT o FROM [Order] o WHERE o.OrderNo=?", orderNo).First, View = "order.html" };
+            });
+
+      
 
             // TODO:
             // Added to avoid a bug when only one handler is registered.
