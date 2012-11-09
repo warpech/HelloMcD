@@ -35,14 +35,13 @@
 
             <h4>Order {{OrderNo}}</h4>
 
-              <div ui-datagrid datarows="item in Items">
-                <datacolumn type="'autocomplete'" 
-                    options="getOptions(item.Product._Options)" 
-                    lookup="autocompleteLookup" 
-                    select="autocompleteSelect" 
-                    value="item.Product._Search" 
-                    title="Product"/>
-                <datacolumn value="item.Quantity" title="Quantity"/>
+            <div ui-datagrid datarows="item in Items">
+                <datacolumn value="item.Product._Search" live strict title="'Product'" type="'autocomplete'">
+                    <optionlist datarows="option in item.Product._Options" clickrow="option.Pick = '$$null'">
+                        <img src="{{option.Image}}" style="width: 16px; height: 16px"> {{option.Description}}
+                    </optionlist>
+                </datacolumn>
+                <datacolumn value="item.Quantity" title="'Quantity'"/>
             </div>
 
 
