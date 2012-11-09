@@ -16,128 +16,43 @@ angular.module('ui.directives', [])
 
         var $container = $('<div class="dataTable"></div>');
 
+        var expression = tAttrs.datarows;
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+          lhs, rhs;
+        if (!match) {
+          throw Error("Expected datarows in form of '_item_ in _collection_' but got '" +
+            expression + "'.");
+        }
+        lhs = match[1];
+        rhs = match[2];
+        tElement.data("uiDatagrid", {
+          lhs: lhs,
+          rhs: rhs,
+          colHeaders: [],
+          columns: [],
+          settings: angular.extend({}, defaultSettings),
+          $container: $container
+        });
+
         return function postLink(scope, element, attrs, controller) {
-          var expression = attrs.datarows;
-          var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-          lhs, rhs, valueIdent, keyIdent;
-          if (!match) {
-            throw Error("Expected datarows in form of '_item_ in _collection_' but got '" +
-              expression + "'.");
-          }
-          lhs = match[1];
-          rhs = match[2];
+          var uiDatagrid = element.data("uiDatagrid");
+          uiDatagrid.settings = angular.extend(uiDatagrid.settings, scope.$eval(attrs.uiDatagrid));
 
           $(element).append($container);
 
-          var settings = angular.extend({}, defaultSettings, scope.$eval(attrs.uiDatagrid));
-          var columns = [];
-          var colHeaders = [];
-
-          $(element).find('datacolumn').each(function (index) {
-            var $this = $(this)
-            , pattern = new RegExp("^(" + lhs + "\\.)")
-            , value = $this.attr('value').replace(pattern, '')
-            , title = $this.attr('title')
-            , type = scope.$eval($this.attr('type'))
-            , options = $this.attr('options')
-            , tmp;
-              
-            var childScope = scope.$new();
-
-            var column = scope.$eval(options) || {};
-            column.data = value;
-
-            colHeaders.push(title);
-
-            var deregister
-            , deinterval;
-
-            switch (type) {
-              case 'autocomplete':
-                settings['autoComplete'].push({
-                  match: function (row, col) {
-                    if (col === index) {
-                      return true;
-                    }
-                  },
-                  source: function (row, col) {
-                    var fn;
-                    if (deregister) {
-                      deregister();
-                      clearInterval(deinterval);
-                    }
-                    var parsed;
-                    childScope.item = $container.data('handsontable').getData()[row];
-                    scope.currentRow = row;
-                    deinterval = setInterval(function () {
-                      childScope.item = $container.data('handsontable').getData()[row];
-                      childScope.$digest();
-                    }, 100);
-                    deregister = childScope.$watch(options, function (oldVal, newVal) {
-                      parsed = childScope.$eval(options)
-                      if (fn) {
-                        fn(parsed);
-                      }
-                    }, true);
-                    return function (query, process) {
-                      fn = process;
-                      if (parsed) {
-                        fn(parsed);
-                      }
-                    }
-                  }
-                });
-                break;
-
-              case 'checkbox':
-                column.type = Handsontable.CheckboxCell;
-                tmp = $this.attr('checkedTemplate');
-                if (typeof tmp !== 'undefined') {
-                  column.checkedTemplate = scope.$eval(tmp); //if undefined then defaults to Boolean true
-                }
-                tmp = $this.attr('uncheckedTemplate');
-                if (typeof tmp !== 'undefined') {
-                  column.uncheckedTemplate = scope.$eval(tmp); //if undefined then defaults to Boolean true
-                }
-                break;
-
-              default:
-                if (typeof type === 'object') {
-                  column.type = type;
-                }
-            }
-
-            if (typeof $this.attr('readOnly') !== 'undefined') {
-              column.readOnly = true;
-            }
-
-            if (typeof $this.attr('live') !== 'undefined') {
-              column.live = true;
-            }
-            
-            for (var attr, i=0, attrs=$this[0].attributes, ilen=attrs.length; i<ilen; i++){
-              attr = attrs.item(i)
-              if(typeof column[attr.nodeName] === 'undefined') {
-                column[attr.nodeName] = childScope.$eval(attr.nodeValue);
-              }
-            }
-
-            columns.push(column);
-          });
-
           if (typeof scope[rhs] !== 'undefined') {
-            settings['data'] = scope[rhs];
-            if (columns.length > 0) {
-              settings['columns'] = columns;
-              settings['startCols'] = columns.length;
+            uiDatagrid.settings['data'] = scope[rhs];
+            if (uiDatagrid.columns.length > 0) {
+              uiDatagrid.settings['columns'] = uiDatagrid.columns;
+              uiDatagrid.settings['startCols'] = uiDatagrid.columns.length;
             }
           }
 
-          if (colHeaders.length > 0) {
-            settings['colHeaders'] = colHeaders;
+          if (uiDatagrid.colHeaders.length > 0) {
+            uiDatagrid.settings['colHeaders'] = uiDatagrid.colHeaders;
           }
 
-          $container.handsontable(settings);
+          $container.handsontable(uiDatagrid.settings);
 
           $container.on('datachange.handsontable', function (event, changes, source) {
             if (!scope.$$phase) { //if digest is not in progress
@@ -149,12 +64,12 @@ angular.module('ui.directives', [])
             scope.$emit('datagridSelection', $container, r, p, r2, p2);
           });
 
-          scope.$watch(rhs, function (value) {
-            if (scope[rhs] !== $container.handsontable('getData') && columns.length > 0) {
+          scope.$watch(rhs, function (newVal) {
+            if (scope[rhs] !== $container.handsontable('getData') && uiDatagrid.columns.length > 0) {
               $container.handsontable('updateSettings', {
                 data: scope[rhs],
-                columns: columns,
-                startCols: columns.length
+                columns: uiDatagrid.columns,
+                startCols: uiDatagrid.columns.length
               });
             }
             else {
@@ -165,4 +80,162 @@ angular.module('ui.directives', [])
       }
     };
     return directiveDefinitionObject;
-  });
+  })
+  .directive('datacolumn', function () {
+    var directiveDefinitionObject = {
+      restrict: 'E',
+      priority: 500,
+      compile: function compile(tElement, tAttrs, transclude) {
+
+        tElement.data("uiDatagridAutocomplete", {
+          value: tAttrs.value,
+          source: null
+        });
+
+        return function postLink(scope, element, attrs, controller) {
+          var uiDatagrid = element.inheritedData("uiDatagrid");
+
+          var pattern = new RegExp("^(" + uiDatagrid.lhs + "\\.)")
+            , value = attrs.value.replace(pattern, '')
+            , title = scope.$eval(attrs.title)
+            , type = scope.$eval(attrs.type)
+            , options = attrs.options
+            , tmp;
+
+          var childScope = scope.$new();
+
+          var column = scope.$eval(options) || {};
+          column.data = value;
+
+          uiDatagrid.colHeaders.push(title);
+
+          switch (type) {
+            case 'autocomplete':
+              column.type = Handsontable.AutocompleteCell;
+              var uiDatagridAutocomplete = element.data("uiDatagridAutocomplete");
+              for (var i in uiDatagridAutocomplete) {
+                if (uiDatagridAutocomplete.hasOwnProperty(i)) {
+                  column[i] = uiDatagridAutocomplete[i];
+                }
+              }
+              break;
+
+            case 'checkbox':
+              column.type = Handsontable.CheckboxCell;
+              tmp = attrs.checkedtemplate;
+              if (typeof tmp !== 'undefined') {
+                column.checkedTemplate = scope.$eval(tmp); //if undefined then defaults to Boolean true
+              }
+              tmp = attrs.uncheckedtemplate;
+              if (typeof tmp !== 'undefined') {
+                column.uncheckedTemplate = scope.$eval(tmp); //if undefined then defaults to Boolean true
+              }
+              break;
+
+            default:
+              if (typeof type === 'object') {
+                column.type = type;
+              }
+          }
+
+          if (typeof attrs.readonly !== 'undefined') {
+            column.readOnly = true;
+          }
+
+          for (var i in attrs) {
+            if (attrs.hasOwnProperty(i) && i.charAt(0) !== '$' && typeof column[i] === 'undefined') {
+              column[i] = childScope.$eval(attrs[i]);
+            }
+          }
+
+          uiDatagrid.columns.push(column);
+        }
+      }
+    };
+    return directiveDefinitionObject;
+  })
+  .directive('optionlist', ['$interpolate', function ($interpolate) {
+  var directiveDefinitionObject = {
+    restrict: 'E',
+    compile: function compile(tElement, tAttrs, transclude, linker) {
+
+      var tpl = $.trim(tElement.html());
+      tElement.remove();
+
+      return function postLink(scope, element, attrs, controller) {
+        var uiDatagridAutocomplete = element.inheritedData("uiDatagridAutocomplete");
+        var uiDatagrid = element.inheritedData("uiDatagrid");
+
+        var expression = attrs.datarows;
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+          lhs, rhs;
+        if (!match) {
+          throw Error("Expected datarows in form of '_item_ in _collection_' but got '" +
+            expression + "'.");
+        }
+        lhs = match[1];
+        rhs = match[2];
+
+        var deregister
+          , deinterval;
+
+        var childScope = scope.$new();
+
+        var interpolateFn = $interpolate(tpl);
+
+        var lastItems;
+        var lastQuery;
+
+        uiDatagridAutocomplete.source = function (query, process) {
+          if ($.trim(query) === lastQuery) {
+            return;
+          }
+          lastQuery = $.trim(query);
+
+          if (deregister) {
+            deregister();
+            clearInterval(deinterval);
+          }
+          var row = uiDatagrid.$container.data('handsontable').getSelected()[0];
+          childScope[uiDatagrid.lhs] = scope.$eval(uiDatagrid.rhs)[row];
+          childScope.$eval(uiDatagridAutocomplete.value + ' = "' + $.trim(query).replace(/"/g, '\"') + '"'); //refresh value after each key stroke
+          childScope.$digest();
+          deinterval = setInterval(function () {
+            scope.currentItem = childScope.item = uiDatagrid.$container.data('handsontable').getData()[row];
+            scope.$digest();
+            childScope.$digest();
+          }, 100);
+          deregister = childScope.$watch(rhs, function (newVal, oldVal) {
+            lastItems = newVal;
+            if (process) {
+              process(newVal);
+            }
+          }, true);
+        };
+
+        uiDatagridAutocomplete.sorter = function (items) {
+          return items;
+        };
+
+        uiDatagridAutocomplete.highlighter = function (item) {
+          childScope[lhs] = item;
+          return interpolateFn(childScope);
+        };
+
+        uiDatagridAutocomplete.select = function () {
+          if (this.$menu.find('.active').length) {
+            var index = this.$menu.find('.active').index();
+            childScope[lhs] = lastItems[index];
+            var instance = uiDatagrid.$container.data('handsontable');
+            instance.destroyEditor();
+            childScope.$eval(attrs.clickrow);
+          }
+
+          lastQuery = void 0;
+          return this.hide();
+        };
+      }
+    }
+  };
+  return directiveDefinitionObject;
+}]);
