@@ -18,13 +18,11 @@
 					}					
 				]
 			},
-			"Price": 99.00,
+			"Price$": 99.00,
 			"Quantity$": 5
 		}
 	],
-
 	"Total": 50.00,
-    "Testing$": "Testing",
 	"Save$": null,
 	"Cancel$": null
 }
