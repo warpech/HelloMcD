@@ -45,6 +45,10 @@ partial class OrderApp : App<Order> {
         }
     }
 
+    [Json.Items.Product._Options]
+    partial class OptionsApp : App<Product> {
+    }
+
     [Json.Items]
     partial class OrderItemApp : App<OrderItem> {
     }
