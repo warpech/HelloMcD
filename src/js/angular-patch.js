@@ -41,7 +41,8 @@ angular.module('StarcounterLib', ['panelApp'])
         }
 
         function getRequestUrl(scope) {
-          return window.location.href + '/../__vm/' + scope['View-Model'];
+            return '/__vm/' + scope['View-Model'];
+//          return window.location.href + '/../__vm/' + scope['View-Model'];
         }
 
         function getRoot(scope) {
