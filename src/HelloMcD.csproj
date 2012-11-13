@@ -99,6 +99,7 @@
     <Content Include="css\bootstrap.readme.txt" />
     <Content Include="js\angular-patch.js" />
     <Content Include="js\angular-ui-handsontable.full.js" />
+    <Content Include="order.html" />
     <Content Include="orders.html" />
     <Content Include="sys\angular-ui-0.3.1.min.js" />
     <Content Include="sys\angular-ui-ieshiv-0.3.1.min.js" />
