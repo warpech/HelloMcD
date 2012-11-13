@@ -91,29 +91,20 @@
     </App>
     <None Include="css\angular-ui-0.3.1.min.css" />
     <None Include="index.html" />
-    <None Include="js\appContext.js" />
-    <None Include="js\jsonpatch.js" />
     <None Include="js\main.js" />
-    <None Include="js\serverScope.js" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\angular-ui-handsontable.full.css" />
     <Content Include="css\bootstrap-2.2.1.min.css" />
     <Content Include="css\bootstrap.readme.txt" />
-    <Content Include="js\angular-datagrid\angular-datagrid.js" />
+    <Content Include="js\angular-patch.js" />
+    <Content Include="js\angular-ui-handsontable.full.js" />
     <Content Include="orders.html" />
     <Content Include="sys\angular-ui-0.3.1.min.js" />
     <Content Include="sys\angular-ui-ieshiv-0.3.1.min.js" />
     <Content Include="sys\angular.1.0.2.min.js" />
     <Content Include="sys\jquery-1.8.2.min.js" />
-    <None Include="js\jsondiffpatch.js" />
     <None Include="Products.txt" />
-    <None Include="js\angular-datagrid\handsontable\jquery.handsontable.css" />
-    <None Include="js\angular-datagrid\handsontable\jquery.handsontable.js" />
-    <None Include="js\angular-datagrid\handsontable\lib\bootstrap-typeahead.js" />
-    <None Include="js\angular-datagrid\handsontable\lib\jQuery-contextMenu\jquery.contextMenu.css" />
-    <None Include="js\angular-datagrid\handsontable\lib\jQuery-contextMenu\jquery.contextMenu.js" />
-    <None Include="js\angular-datagrid\handsontable\lib\jQuery-contextMenu\jquery.ui.position.js" />
-    <None Include="js\angular-datagrid\handsontable\lib\jquery.min.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
