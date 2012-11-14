@@ -1,11 +1,11 @@
 /**
- * angular-patch 0.1.0-dev
+ * angular-patch 0.1.1-dev
  * 
- * Date: Mon Nov 12 2012 22:41:49 GMT+0100 (Central European Standard Time)
+ * Date: Tue Nov 13 2012 17:36:31 GMT+0100 (Central European Standard Time)
 */
 
 angular.module('StarcounterLib', ['panelApp'])
-  .directive('serverScope', ['$http', 'appContext', function ($http, appContext) {
+  .directive('ngApp', ['$http', 'appContext', function ($http, appContext) {
     var directiveDefinitionObject = {
       restrict: 'A',
       compile: function compile(tElement, tAttrs, transclude) {
@@ -202,6 +202,25 @@ angular.module('StarcounterLib', ['panelApp'])
             parseViewModelId(scope);
             getRoot(scope);
           }
+        }
+      }
+    };
+    return directiveDefinitionObject;
+  }])
+  
+  .directive('uiClick', ['$parse', function ($parse) {
+    var directiveDefinitionObject = {
+      restrict: 'A',
+      compile: function compile(tElement, tAttrs, transclude) {
+        var fn = $parse(tAttrs.uiClick + ' = "$$null"');
+        return function postLink(scope, element, attrs, controller) {
+          element.bind('click', function(event) {
+            scope.$apply(function() {
+              fn(scope, {
+                $event:event
+              });
+            });
+          });
         }
       }
     };
