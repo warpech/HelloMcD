@@ -96,6 +96,7 @@
   <ItemGroup>
     <Content Include="css\angular-ui-handsontable.full.css" />
     <Content Include="css\bootstrap-2.2.1.min.css" />
+    <Content Include="css\bootstrap.min.css" />
     <Content Include="css\bootstrap.readme.txt" />
     <Content Include="js\angular-patch.js" />
     <Content Include="js\angular-ui-handsontable.full.js" />
