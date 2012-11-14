@@ -10,10 +10,13 @@ public class Product : Entity {
 }
 
 public class Order : Entity {
+    // TODO:
+    // OrderNo should be assigned after the order is committed, but for 
+    // debugging purposes now it's assigned in a really unsafe way here.
+    private static long NextOrderNo = 1;
+    public Order() { OrderNo = NextOrderNo++; }
+
     public long OrderNo;
-
-    public string Testing;
-
     public decimal Total {
         get {
             // TODO: 

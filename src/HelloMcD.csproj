@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>OrderApp</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -73,7 +76,7 @@
     <Compile Include="OrderListApp.json.cs">
       <DependentUpon>OrderListApp.json</DependentUpon>
     </Compile>
-    <Compile Include="MainApp.cs" />
+    <Compile Include="SampleDataImporter.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="OrderApp.json.cs">
       <DependentUpon>OrderApp.json</DependentUpon>

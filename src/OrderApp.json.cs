@@ -2,6 +2,13 @@
 using Starcounter;
 
 partial class OrderApp : App<Order> {
+    static void Main() {
+        SampleDataImporter.Run();
+        GET("/new-order", () => new OrderApp(() => new Order()) { View = "order.html" });
+        GET("/orders", () => new OrderListApp(() => null) { Orders = Db.SQL("SELECT o FROM [Order] o"), View = "orders.html" });
+        GET("/orders/@i", (int orderNo) => new OrderApp(() => Db.SQL("SELECT o FROM [Order] o WHERE o.OrderNo=?", orderNo).First) { View = "order.html" });
+    }
+
     protected override void OnData() {
         if (Items.Count == 0)
             Items.Add(new OrderItem() { Order = this.Data, Quantity = 1 });
@@ -13,15 +20,22 @@ partial class OrderApp : App<Order> {
 
     void Handle(Input.Items.Product._Options.Pick pick) {
         ((App)pick.App.Parent.Parent).Data = pick.App.Data;
+
+        // TODO:
+        // The databinding should take care of this. Needs to be implemented.
+        ((OrderItemApp)pick.App.Parent.Parent.Parent).Data.Product = pick.App.Data;
+
         this.Items.Add(new OrderItem() { Order = this.Data, Quantity = 1 }); // Add a new empty row;
     }
 
     void Handle(Input.Save save) {
         Commit();
+        Data = new Order();
     }
 
     void Handle(Input.Cancel cancel) {
         Abort();
+        Data = new Order();
     }
 
     // TODO:
@@ -44,12 +58,8 @@ partial class OrderApp : App<Order> {
             order.Refresh(order.Template.Total);
         }
     }
-
     [Json.Items.Product._Options]
-    partial class OptionsApp : App<Product> {
-    }
-
+    partial class OptionsApp : App<Product> { }
     [Json.Items]
-    partial class OrderItemApp : App<OrderItem> {
-    }
+    partial class OrderItemApp : App<OrderItem> { }
 }

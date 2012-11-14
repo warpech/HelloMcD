@@ -6,37 +6,18 @@ using Starcounter.Internal.Application;
 using Starcounter.Internal.JsonPatch;
 using Starcounter.Internal.Web;
 
-partial class MainApp : App {
+internal class SampleDataImporter{
 
-    private static String RESOURCE_DIRECTORY = @"c:\GitHub\HelloMcD\src";
-    //private static String RESOURCE_DIRECTORY = @"c:\Code\Samples\HelloMcD\src";
+    //private static String RESOURCE_DIRECTORY = @"c:\GitHub\HelloMcD\src";
+    private static String RESOURCE_DIRECTORY = @"c:\Code\Samples\HelloMcD\src";
     //private static String RESOURCE_DIRECTORY = @"HelloMcd"; // Marcin
 
-    static void Main(String[] args) {
+    internal static void Run() {
+        // TODO:
+        // Remove call to Bootstrap and bootstrap method when bootstrapping is in Apps.
         Bootstrap();
+
         AssureSampleData();
-
-        GET("/", () => {
-            LongRunningTransaction.NewCurrent();
-            Order order = new Order() { OrderNo = 123 };
-            return new OrderApp() { Data = order, View = "index.html" };
-        });
-
-        GET("/new-order", () => {
-            LongRunningTransaction.NewCurrent();
-            Order order = new Order() { OrderNo = 123 };
-            return new OrderApp() { Data = order, View = "order.html" };
-        });
-
-        GET("/orders", () => {
-            LongRunningTransaction.NewCurrent();
-            return new OrderListApp() { Orders = Db.SQL("SELECT o FROM [Order] o"), View = "orders.html" };
-        });
-
-        GET("/orders/@i", (int orderNo) => {
-            LongRunningTransaction.NewCurrent();
-            return new OrderApp() { Data = Db.SQL("SELECT o FROM [Order] o WHERE o.OrderNo=?", orderNo).First, View = "order.html" };
-        });
     }
 
     private static void AssureSampleData() {
@@ -44,7 +25,7 @@ partial class MainApp : App {
         StreamReader reader;
         String productStr;
 
-        p = SQL("SELECT p from Product p").First;
+        p = Db.SQL("SELECT p from Product p").First;
         if (p == null) {
             using (reader = new StreamReader(RESOURCE_DIRECTORY + "\\Products.txt")) {
                 Db.Transaction(() => {
