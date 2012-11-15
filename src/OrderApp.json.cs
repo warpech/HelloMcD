@@ -22,13 +22,14 @@ partial class OrderApp : App<Order> {
         ((App)pick.App.Parent.Parent).Data = pick.App.Data;
 
         // TODO:
-        // The databinding should take care of this. Needs to be implemented.
+        // The databinding should take care of this. Needs to be fixed.
         ((OrderItemApp)pick.App.Parent.Parent.Parent).Data.Product = pick.App.Data;
 
         this.Items.Add(new OrderItem() { Order = this.Data, Quantity = 1 }); // Add a new empty row;
     }
 
     void Handle(Input.Save save) {
+        Data.AssignOrderNo();
         Commit();
         Data = new Order();
     }
@@ -38,24 +39,11 @@ partial class OrderApp : App<Order> {
         Data = new Order();
     }
 
-    // TODO:
-    // To be removed when the autorefresh is in place.
-    void Handle(Input.Items.Quantity qtyChange) {
-        Refresh(Template.Total);
-    }
-
     [Json.Items.Product]
     partial class OrderItemProductApp : App<Product> {
         protected override void OnData() {
             this._Search = Data.Description;
-                
-            OrderItemApp item = (OrderItemApp)this.Parent;
-            item.Price = Data.Price;
-                
-            // TODO:
-            // Remove when autorefresh is in place.
-            OrderApp order = (OrderApp)this.Parent.Parent.Parent;
-            order.Refresh(order.Template.Total);
+            ((OrderItemApp)this.Parent).Data.Price = Data.Price;
         }
     }
     [Json.Items.Product._Options]
