@@ -3,6 +3,6 @@ bin
 obj
 *.suo
 *.user
-
+node_modules
 # mstest test results
 TestResults

@@ -1,11 +1,22 @@
 /**
- * angular-patch 0.1.1-dev
+ * angular-patch 0.1.3-dev
  * 
- * Date: Tue Nov 13 2012 17:36:31 GMT+0100 (Central European Standard Time)
+ * Date: Fri Nov 16 2012 14:29:37 GMT+0100 (Central European Standard Time)
 */
 
-angular.module('StarcounterLib', ['panelApp'])
-  .directive('ngApp', ['$http', 'appContext', function ($http, appContext) {
+angular.module('StarcounterLib.config', []).value('StarcounterLib.config', {});
+
+function ngAppFactory() {
+  return ['$http', 'appContext', '$rootScope', 'StarcounterLib.config', function ($http, appContext, $rootScope, appConfig) {  
+    
+    var defaultConfig = {
+      getRequestUrl: function(scope){
+        return '/__vm/' + scope['View-Model'];
+      }
+    }
+    var config = {};
+    angular.extend(config, defaultConfig, appConfig);
+    
     var directiveDefinitionObject = {
       restrict: 'A',
       compile: function compile(tElement, tAttrs, transclude) {
@@ -13,14 +24,14 @@ angular.module('StarcounterLib', ['panelApp'])
         var remoteScope = {};
         var rootLoaded = false;
 
-        function overwriteRoot(scope, data) {
+        function overwriteRoot(data) {
           remoteScope = angular.copy(data); //remote is current state of data on server
           for (var i in data) {
-            if (data.hasOwnProperty(i)) {              
-              scope[i] = data[i];
+            if (data.hasOwnProperty(i)) {
+              $rootScope[i] = data[i];
             }
           }
-          findAndSetWatchers(scope);
+          findAndSetWatchers($rootScope);
         }
 
         function patchRoot(scope, patch) {
@@ -40,17 +51,12 @@ angular.module('StarcounterLib', ['panelApp'])
           }
         }
 
-        function getRequestUrl(scope) {
-            return '/__vm/' + scope['View-Model'];
-//          return window.location.href + '/../__vm/' + scope['View-Model'];
-        }
-
         function getRoot(scope) {
           $http({
             method: 'GET',
-            url: getRequestUrl(scope)
+            url: config.getRequestUrl(scope)
           }).success(function (data, status, headers, config) {
-            overwriteRoot(scope, data);            
+            overwriteRoot(data);            
             rootLoaded = true;
           });
         }
@@ -58,7 +64,7 @@ angular.module('StarcounterLib', ['panelApp'])
         function updateServer(scope, update) {
           $http({
             method: 'PATCH',
-            url: getRequestUrl(scope),
+            url: config.getRequestUrl(scope),
             data: update
           }).success(function (data, status, headers, config) {
             patchRoot(scope, data);
@@ -186,7 +192,7 @@ angular.module('StarcounterLib', ['panelApp'])
               // json file loaded
               console.log("NOTICE: Local scope was loaded (" + attrs.serverScope + ")");
               // apply loaded data to scope
-              overwriteRoot(scope, data);
+              overwriteRoot(data);
               rootLoaded = true;
             }).error(function (data, status, headers, config) {
               console.log("ERROR: Loading " + attrs.serverScope + " (" + status + ")");
@@ -195,7 +201,7 @@ angular.module('StarcounterLib', ['panelApp'])
           }
 
           if (typeof window.__elim_rq !== 'undefined') {
-            overwriteRoot(scope, window.__elim_rq);
+            overwriteRoot(window.__elim_rq);
             rootLoaded = true;
           }
           else {
@@ -206,26 +212,66 @@ angular.module('StarcounterLib', ['panelApp'])
       }
     };
     return directiveDefinitionObject;
-  }])
-  
-  .directive('uiClick', ['$parse', function ($parse) {
-    var directiveDefinitionObject = {
-      restrict: 'A',
-      compile: function compile(tElement, tAttrs, transclude) {
-        var fn = $parse(tAttrs.uiClick + ' = "$$null"');
-        return function postLink(scope, element, attrs, controller) {
-          element.bind('click', function(event) {
-            scope.$apply(function() {
-              fn(scope, {
-                $event:event
-              });
-            });
+  }]
+}
+
+angular.module('StarcounterLib', ['panelApp', 'StarcounterLib.config'])
+  .directive('ngApp', ngAppFactory())
+  .directive('ngRemoteapp', ngAppFactory());
+angular.element(document).ready(function () {
+
+  // 1. After the page and all of the code is loaded, find the root of the HTML template, which is typically the root of the document.
+  // 2. Call api/angular.bootstrap to compile the template into an executable, bi-directionally bound application.
+
+  function angularRemoteInit(element) {
+    var elements = [element],
+    appElement,
+    module,
+    names = ['ng:remoteapp', 'ng-remoteapp', 'x-ng-remoteapp', 'data-ng-remoteapp'],
+    NG_APP_CLASS_REGEXP = /\sng[:\-]remoteapp(:\s*([\w\d_]+);?)?\s/;
+
+    function append(element) {
+      element && elements.push(element);
+    }
+
+    angular.forEach(names, function (name) {
+      names[name] = true;
+      append(document.getElementById(name));
+      name = name.replace(':', '\\:');
+      if (element.querySelectorAll) {
+        angular.forEach(element.querySelectorAll('.' + name), append);
+        angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
+        angular.forEach(element.querySelectorAll('[' + name + ']'), append);
+      }
+    });
+
+    angular.forEach(elements, function (element) {
+      if (!appElement) {
+        var className = ' ' + element.className + ' ';
+        var match = NG_APP_CLASS_REGEXP.exec(className);
+        if (match) {
+          appElement = element;
+          module = (match[2] || '').replace(/\s+/g, ',');
+        } else {
+          angular.forEach(element.attributes, function (attr) {
+            if (!appElement && names[attr.name]) {
+              appElement = element;
+              module = attr.value;
+            }
           });
         }
       }
-    };
-    return directiveDefinitionObject;
-  }]);
+    });
+
+    if (appElement) {
+      var modules = module ? module.split(" ") : [];
+      modules.unshift('StarcounterLib'); // Insert StarcounterLib module
+      angular.bootstrap(appElement, modules);
+    }
+  }
+
+  angularRemoteInit(document);
+});
 //excerpt from https://github.com/angular/angularjs-batarang/blob/master/js/services/appContext.js
 angular.module('panelApp', []).factory('appContext', function () {
   // cycle.js
