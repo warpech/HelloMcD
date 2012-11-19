@@ -30,7 +30,7 @@ module.exports = function (grunt) {
           'src/sys/angular-patch.js',
           'src/sys/angular-ui-handsontable.full.js'
         ],
-        dest: 'src/sys/jquery-angular-angularpatch-bootstrap.js'
+        dest: 'src/sys/jquery-angular-angularpatch-handsontable.js'
       },
       with_handsontable_js: {
         src: [
@@ -40,7 +40,7 @@ module.exports = function (grunt) {
           'src/sys/angular-patch.js',
           'src/sys/bootstrap-2.2.1.js'
         ],
-        dest: 'src/sys/jquery-angular-angularpatch-handsontable.js'
+        dest: 'src/sys/jquery-angular-angularpatch-bootstrap.js'
       },     
       with_bootstrap_handsontable_js: {
         src: [
