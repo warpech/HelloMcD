@@ -2,5 +2,8 @@
   "name": "angular-remote-package",
   "description": "Angular Remote package",
   "author": "Anders Wahlgren",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt-css": "~0.3.0"
+  }
 }
