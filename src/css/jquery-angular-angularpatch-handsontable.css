@@ -1,13 +1,13 @@
 /**
  * angular-remote package 0.1.0
  * 
- * Date: Fri Nov 16 2012 19:42:48 GMT+0100 (Västeuropa, normaltid)
+ * Date: Mon Nov 19 2012 11:13:54 GMT+0100 (Västeuropa, normaltid)
 */
 
 /**
- * angular-ui-handsontable 0.1.1-dev
+ * angular-ui-handsontable 0.1.3
  * 
- * Date: Tue Nov 13 2012 16:19:09 GMT+0100 (Central European Standard Time)
+ * Date: Fri Nov 16 2012 20:26:00 GMT+0100 (Central European Standard Time)
 */
 
 /**
@@ -33,7 +33,8 @@
   -khtml-user-select: none;
   -moz-user-select: none;
   -o-user-select: none;
-  user-select: none;
+  -ms-user-select: none;
+  /*user-select: none; /*no browser supports unprefixed version*/
   border-spacing: 0;
 }
 

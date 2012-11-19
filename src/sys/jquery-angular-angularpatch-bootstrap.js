@@ -1,7 +1,7 @@
 /**
  * angular-remote package 0.1.0
  * 
- * Date: Mon Nov 19 2012 10:09:48 GMT+0100 (Västeuropa, normaltid)
+ * Date: Mon Nov 19 2012 11:13:54 GMT+0100 (Västeuropa, normaltid)
 */
 
 /*!
@@ -23846,9 +23846,9 @@ var styleDirective = valueFn({
 })(window, document);
 angular.element(document).find('head').append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');
 /**
- * angular-patch 0.1.3-dev
+ * angular-patch 0.1.4
  * 
- * Date: Fri Nov 16 2012 14:29:37 GMT+0100 (Central European Standard Time)
+ * Date: Fri Nov 16 2012 20:26:54 GMT+0100 (Central European Standard Time)
 */
 
 angular.module('StarcounterLib.config', []).value('StarcounterLib.config', {});
@@ -25136,7 +25136,6 @@ angular.module('panelApp', []).factory('appContext', function () {
   });
 
 }).call(this);
-
 /* ===================================================
  * bootstrap-transition.js v2.2.1
  * http://twitter.github.com/bootstrap/javascript.html#transitions
