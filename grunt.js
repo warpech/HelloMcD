@@ -17,7 +17,7 @@ module.exports = function (grunt) {
       minimum_js: {
         src: [
           '<banner>',
-          'src/sys/angular.1.0.2.js',
+          'src/sys/angular-1.0.2.js',
           'src/sys/angular-patch.js'
         ],
         dest: 'src/sys/angular-angularpatch.js'
@@ -26,7 +26,7 @@ module.exports = function (grunt) {
         src: [
           '<banner>',
           'src/sys/jquery-1.8.2.js',
-          'src/sys/angular.1.0.2.js',
+          'src/sys/angular-1.0.2.js',
           'src/sys/angular-patch.js',
           'src/sys/angular-ui-handsontable.full.js'
         ],
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
         src: [
           '<banner>',
           'src/sys/jquery-1.8.2.js',
-          'src/sys/angular.1.0.2.js',
+          'src/sys/angular-1.0.2.js',
           'src/sys/angular-patch.js',
           'src/sys/bootstrap-2.2.1.js'
         ],
@@ -46,7 +46,7 @@ module.exports = function (grunt) {
         src: [
           '<banner>',
           'src/sys/jquery-1.8.2.js',
-          'src/sys/angular.1.0.2.js',
+          'src/sys/angular-1.0.2.js',
           'src/sys/angular-patch.js',
           'src/sys/bootstrap-2.2.1.js',
           'src/sys/angular-ui-handsontable.full.js'
